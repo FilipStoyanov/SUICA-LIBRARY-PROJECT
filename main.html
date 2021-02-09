@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<head>
+	<meta charset="utf-8">
+	<title>СРИЧКИ</title>
+	<script src="suica.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+	<script>
+        //Javascript код
+		 function main()
+    {
+        p=new Suica('one');   // създаваме си canvas с id = "one"
+        /*В проекта ще имаме 3 canvas полета*/
+        background([0.8,0.8,0.3]); //задаваме заден фон на канваса
+        lookAt([0,0,200],[0,0,0],[1,0,0]); //задаваме гледна точка
+        
+        //За интерактивността ще ни трябват функции за пускане на бутоните на мишката, натискане на бутоните и задържането им
+        p.gl.canvas.addEventListener('mousedown',mouseDown1,false);
+		p.gl.canvas.addEventListener('mouseup',mouseUp,false);
+        p.gl.canvas.addEventListener('mousemove',mouseMove,false);
+        p.gl.canvas.addEventListener('contextmenu',
+        function(e){e.preventDefault();},false);
+
+        /*Ще използваме група от обекти (кубове и паралепипеди), по този начин ще си създадем куб(или по-точно паралелипед, който се доближава много до размерите на куб),
+        тъй като към един обект няма да може да сложим различни текстури.*/
+
+        /*Задаваме координатите на всичките 6 куба, които ще имаме в канваса. Прикрепяме им текстурите, така че на всяка стена на групата от обекти да се вижда различна текстура,
+        ,т.е на по-малките кубове се вижда само по 1 стена.*/
+        cube1=group([cube([0,0,0],13).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([0,0.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid ([0,-0.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture8.jpg")}),
+                     cuboid([0.1,0,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([-0.1,0,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture6.jpg")}),
+                     cuboid([0,0,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture7.jpg")})]).custom({interactive:true});;
+        cube1.merge(); //обединяваме си обектите в група, тъй като след това ще ни трябва да местим и ротираме цялата група, а не съставните й елементи
+        cube1.origin=[0,0,0];
+
+        //Правим абсолютно същото с всички останали групи
+        cube2=group([cube([20,15,-10],13).custom({image: new Suica.Image ("texture6.jpg")}),
+                     cuboid([20,15.1,-10],[12.9,13,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid ([20,14.9,-10],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([20.1,15,-10],[13,12.9,12.9]).custom({image: new Suica.Image ("texture8.jpg")}),
+                     cuboid([19.9,15,-10],[13,12.9,12.9]).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([20,15,-10.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube2.merge();
+        cube2.origin=[0,0,0];
+
+        cube3=group([cube([0,-35,20],13).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([0,-35.1,20],[12.9,13,12.9]).custom({image: new Suica.Image ("texture8.jpg")}),
+                     cuboid ([0,-34.9,20],[12.9,13,12.9]).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([0.1,-35,20],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([-0.1,-35,20],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([0,-35,19.9],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube3.merge();
+        cube3.origin=[0,0,0];
+
+        cube4=group([cube([30,-50,0],13).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([30,-50.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([30,-49.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([30.1,-50,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([29.9,-50,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([30,-50,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture8.jpg")})]).custom({interactive:true});;
+        cube4.merge();
+        cube4.origin=[0,0,0];
+
+        cube5=group([cube([20,30,0],13).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([20,30.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([20,29.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([20.1,30,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([19.9,30,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([20,30,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube5.merge();
+        cube5.origin=[0,0,0];
+       
+        cube6=group([cube([0,-45,0],13).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([0,-45.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([0,-44.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([0.1,-45,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([-0.1,-45,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([0,-45,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube6.merge();
+        cube6.origin=[0,0,0];
+
+        //Променливите по-долу ще използваме за това да си запазваме в тях адреса на елементите от HTML кода с тези id-та
+        //Първите 4 променливи са за отговорите на задача 1, а следващите 3 променливи са за отговорите на задача 2
+        picture1 = document.getElementById('word1');  
+        picture2 = document.getElementById('word2');
+        picture3 = document.getElementById('word3');
+        picture4 = document.getElementById('word4');
+
+        answer1 = document.getElementById('pict1');
+        answer2 = document.getElementById('pict2');
+        answer3 = document.getElementById('pict3');
+
+        
+        /*Абсолютно същите неща правим и за следващите 2 canvas полета.
+          Единствените разлики са в имената (p1,p2 и p3) на СУИКА обектите и на имената на слушателите към
+          СУИКА обектите - затова имаме функции mouseDown1, mouseDown2,mouseDown3 за трите канвас полета
+        */
+        p2=new Suica('two');
+        background([0.8,0.8,0.3]);
+        lookAt([0,0,200],[0,0,0],[1,0,0]);
+        
+        p2.gl.canvas.addEventListener('mousedown',mouseDown2,false);
+		p2.gl.canvas.addEventListener('mouseup',mouseUp,false);
+        p2.gl.canvas.addEventListener('mousemove',mouseMove,false);
+        p2.gl.canvas.addEventListener('contextmenu',
+        function(e){e.preventDefault();},false);
+        
+        cube1=group([cube([0,0,0],13).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([0,0.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid ([0,-0.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture6.jpg")}),
+                     cuboid([0.1,0,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([-0.1,0,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([0,0,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture3.jpg")})]).custom({interactive:true});;
+        cube1.merge();
+        cube1.origin=[0,0,0];
+
+        cube2=group([cube([20,15,-10],13).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([20,15.1,-10],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([20,14.9,-10],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([20.1,15,-10],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([19.9,15,-10],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([20,15,-10.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube2.merge();
+        cube2.origin=[0,0,0];
+
+        cube3=group([cube([0,-35,20],13).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([0,-35.1,20],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid ([0,-34.9,20],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([0.1,-35,20],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([-0.1,-35,20],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([0,-35,19.9],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube3.merge();
+        cube3.origin=[0,0,0];
+
+        cube4=group([cube([30,-50,0],13).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([30,-50.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture6.jpg")}),
+                     cuboid ([30,-49.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([30.1,-50,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([29.9,-50,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([30,-50,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture2.jpg")})]).custom({interactive:true});;
+        cube4.merge();
+        cube4.origin=[0,0,0];
+
+        cube5=group([cube([20,30,0],13).custom({image: new Suica.Image ("texture8.jpg")}),
+                     cuboid([20,30.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid ([20,29.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([20.1,30,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([19.9,30,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([20,30,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube5.merge();
+        cube5.origin=[0,0,0];
+       
+        cube6=group([cube([0,-45,0],13).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([0,-45.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([0,-44.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([0.1,-45,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([-0.1,-45,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([0,-45,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube6.merge();
+        cube6.origin=[0,0,0];
+
+        picture1 = document.getElementById('word1');
+        picture2 = document.getElementById('word2');
+        picture3 = document.getElementById('word3');
+        picture4 = document.getElementById('word4');
+
+        answer1 = document.getElementById('pict1');
+        answer2 = document.getElementById('pict2');
+        answer3 = document.getElementById('pict3');
+        
+
+        p3=new Suica('three');
+        background([0.8,0.8,0.3]);
+        lookAt([0,0,200],[0,0,0],[1,0,0]);
+        
+        p3.gl.canvas.addEventListener('mousedown',mouseDown3,false);
+		p3.gl.canvas.addEventListener('mouseup',mouseUp,false);
+        p3.gl.canvas.addEventListener('mousemove',mouseMove,false);
+        p3.gl.canvas.addEventListener('contextmenu',
+        function(e){e.preventDefault();},false);
+        
+        cube1=group([cube([0,0,0],13).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([0,0.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid ([0,-0.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([0.1,0,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([-0.1,0,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture6.jpg")}),
+                     cuboid([0,0,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture7.jpg")})]).custom({interactive:true});;
+        cube1.merge();
+        cube1.origin=[0,0,0];
+
+        cube2=group([cube([20,15,-10],13).custom({image: new Suica.Image ("texture6.jpg")}),
+                     cuboid([20,15.1,-10],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid ([20,14.9,-10],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([20.1,15,-10],[13,12.9,12.9]).custom({image: new Suica.Image ("texture8.jpg")}),
+                     cuboid([19.9,15,-10],[13,12.9,12.9]).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([20,15,-10.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture5.jpg")})]).custom({interactive:true});;
+        cube2.merge();
+        cube2.origin=[0,0,0];
+
+        cube3=group([cube([0,-35,20],13).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([0,-35.1,20],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([0,-34.9,20],[12.9,13,12.9]).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([0.1,-35,20],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([-0.1,-35,20],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([0,-35,19.9],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube3.merge();
+        cube3.origin=[0,0,0];
+
+        cube4=group([cube([30,-50,0],13).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([30,-50.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([30,-49.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([30.1,-50,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([29.9,-50,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture7.jpg")}),
+                     cuboid([30,-50,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture8.jpg")})]).custom({interactive:true});;
+        cube4.merge();
+        cube4.origin=[0,0,0];
+
+        cube5=group([cube([20,30,0],13).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([20,30.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid ([20,29.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid([20.1,30,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([19.9,30,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([20,30,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube5.merge();
+        cube5.origin=[0,0,0];
+       
+        cube6=group([cube([0,-45,0],13).custom({image: new Suica.Image ("texture1.jpg")}),
+                     cuboid([0,-45.1,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture2.jpg")}),
+                     cuboid ([0,-44.9,0],[12.9,13,12.9]).custom({image: new Suica.Image ("texture3.jpg")}),
+                     cuboid([0.1,-45,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture4.jpg")}),
+                     cuboid([-0.1,-45,0],[13,12.9,12.9]).custom({image: new Suica.Image ("texture5.jpg")}),
+                     cuboid([0,-45,-0.1],[12.9,12.9,13]).custom({image: new Suica.Image ("texture6.jpg")})]).custom({interactive:true});;
+        cube6.merge();
+        cube6.origin=[0,0,0];
+
+        picture1 = document.getElementById('word1');
+        picture2 = document.getElementById('word2');
+        picture3 = document.getElementById('word3');
+        picture4 = document.getElementById('word4');
+
+        answer1 = document.getElementById('pict1');
+        answer2 = document.getElementById('pict2');
+        answer3 = document.getElementById('pict3');
+        
+        
+    }
+    var object;
+    /*Следващите 6 функции са за 6 различни ротации на обект, така че да се виждат 6те различни стени на нашите групи обекти */
+    function rot1()
+    {
+        object.focus=[0.5,0,0];
+        object.spin=0;
+    }
+    function rot2()
+    {
+        object.focus=[0.6,0,0];
+        object.spin=1.5; 
+    }
+
+     function rot3()
+     {
+        object.focus=[0.1,0,0];
+        object.spin=3; 
+    }
+    function rot4()
+     {
+        object.focus=[-0.4,0,-1.5]; 
+    }
+    function rot5()
+     {
+        object.focus=[0.5,0,0.1];
+        object.spin=4.5;
+    }
+    function rot6()
+     {
+        object.focus=[0,0,0];
+        object.spin=0; 
+    }
+    var rotateCube=[rot1,rot2,rot3,rot4,rot5,rot6];
+    //Създаваме си масив, в който ще си пазим адресите към 6те функции
+    function mouseDown1(event) //Слушател за натискане на бутон към първото канвас поле
+    {
+            x = event.clientX;
+			y = event.clientY;
+            object = p.objectAtPoint(x,y);
+            
+        if (object)
+        {
+        if(event.buttons!=1)  //Проверка за натискане на десен бутон на мишката 
+         {
+            rotateCube[Math.floor(Math.random() * rotateCube.length)]();
+            //избираме на случаен принцип някоя от по-горните 6 функции за ротация и преместване на куба
+            //по този начин ще завъртаме кубовете
+         }
+        }
+            
+    }
+    //Същата функция, както mouseDown1, само че ще бъде слушателя към второто канвас поле.
+    function mouseDown2(event)
+    {
+            x = event.clientX;
+			y = event.clientY;
+            object = p2.objectAtPoint(x,y);
+            
+        if (object)
+        {
+        if(event.buttons!=1)
+         {
+            rotateCube[Math.floor(Math.random() * rotateCube.length)]();
+         }
+        }
+            
+    }
+    //Това ще ни е пък слушателят към третото канвас поле, функцията за натискане на бутон
+    function mouseDown3(event)
+    {
+            x = event.clientX;
+			y = event.clientY;
+            object = p3.objectAtPoint(x,y);
+            
+        if (object)
+        {
+        if(event.buttons!=1)
+         {
+            rotateCube[Math.floor(Math.random() * rotateCube.length)]();
+         }
+        }
+            
+    }
+    //Функция за пускане на бутон на мишката
+    function mouseUp(event)
+    {
+           object=undefined;
+    }
+    //Влачене с мишката 
+    function mouseMove(event)
+    {
+        if (object)
+        {
+         if(event.buttons==1) // Ако сме натиснали ляв бутон, ще преместваме обекта чрез влачене
+         {
+			{
+				object.center[1] -= (event.clientX-x); // Задваме новите стойности за x и y координатите за центъра на обекта
+				object.center[0] -= (event.clientY-y);
+            }
+            x = event.clientX;
+            y = event.clientY;
+         }
+        
+    }
+		
+    }
+    //Функция за задача 1
+    function send()
+    {
+        var x1 = Number(picture1.value);
+        var x2 = Number(picture2.value);
+        var x3 = Number(picture3.value);
+        var x4 = Number(picture4.value);
+        document.getElementById("word1").value = x1;
+        document.getElementById("word2").value = x2;
+        document.getElementById("word3").value = x3;
+        document.getElementById("word4").value = x4;
+        /*Взимаме 4те отговора от задача 1 и разглеждаме различните възможности за верни отговори, съответно 0,1,2,3 или 4 верни отговора
+         Според това колко верни отговора имаме съобщението, което ще ни излиза, ще е различно и с различно форматиране.*/
+        if(picture1.value==4 && picture2.value==2 && picture3.value==1 && picture4.value==2)
+        {
+        document.getElementById("result1").innerHTML = "Поздравления! Имате 4 верни отговора и нито един грешен!" + " Брой точки: 4";
+        document.getElementById("result2").innerHTML ="";
+        document.getElementById("solution2").innerHTML ="Виж решенията";
+        }
+        if((picture1.value!=4 && picture2.value==2 && picture3.value==1 && picture4.value==2)
+        || (picture1.value==4 && picture2.value!=2 && picture3.value==1 && picture4.value==2)
+        || (picture1.value==4 && picture2.value==2 && picture3.value!=1 && picture4.value==2)
+        || (picture1.value==4 && picture2.value==2 && picture3.value==1 && picture4.value!=2))
+        {
+            document.getElementById("result1").innerHTML="Имате 3 верни отговора и само 1 грешен отговор!"+" Брой точки: 3";
+            document.getElementById("result2").innerHTML = "";
+            document.getElementById("solution2").innerHTML ="Виж решенията";
+        }
+        if((picture1.value!=4 && picture2.value!=2 && picture3.value==1 && picture4.value==2)
+        || (picture1.value!=4 && picture2.value==2 && picture3.value!=1 && picture4.value==2)
+        || (picture1.value!=4 && picture2.value==2 && picture3.value==1 && picture4.value!=2)
+        || (picture1.value==4 && picture2.value!=2 && picture3.value!=1 && picture4.value==2)
+        || (picture1.value==4 && picture2.value!=2 && picture3.value==1 && picture4.value!=2)
+        || (picture1.value==4 && picture2.value==2 && picture3.value!=1 && picture4.value!=2))
+        {
+            document.getElementById("result1").innerHTML="";
+            document.getElementById("result2").innerHTML = "Имате 2 верни отговора и 2 грешни отговора!"+" Брой точки: 2";
+            document.getElementById("solution2").innerHTML ="Виж решенията";
+        }
+        if((picture1.value!=4 && picture2.value!=2 && picture3.value!=1 && picture4.value==2)
+        || (picture1.value!=4 && picture2.value!=2 && picture3.value==1 && picture4.value!=2)
+        || (picture1.value!=4 && picture2.value==2 && picture3.value!=1 && picture4.value!=2)
+        || (picture1.value==4 && picture2.value!=2 && picture3.value!=1 && picture4.value!=2) )
+        {
+            document.getElementById("result1").innerHTML="";
+            document.getElementById("result2").innerHTML = "Имате само 1 верен отговор и 3 грешни отговора!"+" Брой точки: 1";
+            document.getElementById("solution2").innerHTML ="Виж решенията";
+        }
+        if((picture1.value!=4 && picture2.value!=2 && picture3.value!=1 && picture4.value!=2))
+        {
+            document.getElementById("result1").innerHTML="";
+            document.getElementById("result2").innerHTML = "За съжаление нямате верен отговор!"+" Брой точки: 0";
+            document.getElementById("solution2").innerHTML ="Виж решенията";
+        }
+    }
+    //Функция за задача 2
+    /*Взимаме 3те отговора от задача 2 и разглеждаме различните възможности за верни отговори, съответно 0,1,2 или 3 верни отговора
+         Според това колко верни отговора имаме съобщението, което ще ни излиза, ще е различно и с различно форматиране.*/
+        
+    function send2()
+    {
+        var x1 = String(answer1.value);
+        var x2 = String(answer2.value);
+        var x3 = String(answer3.value);
+        document.getElementById("pict1").value = x1;
+        document.getElementById("pict2").value = x2;
+        document.getElementById("pict3").value = x3;
+
+        if(answer1.value=="кола" && answer2.value=="таралеж" && answer3.value=="заек")
+        {
+        document.getElementById("res1").innerHTML = "Поздравления! Имате 3 верни отговора и нито един грешен!";
+        document.getElementById("res2").innerHTML ="";
+        document.getElementById("solution1").innerHTML ="Виж решенията";
+        }
+        if((answer1.value=="кола" && answer2.value=="таралеж" && answer3.value!="заек")
+        || (answer1.value=="кола" && answer2.value!="таралеж" && answer3.value=="заек")
+        || (answer1.value!="кола" && answer2.value=="таралеж" && answer3.value=="заек"))
+        {
+        document.getElementById("res1").innerHTML = "Имате 2 верни отговора и 1 грешен!";
+        document.getElementById("res2").innerHTML ="";
+        document.getElementById("solution1").innerHTML ="Виж решенията";
+        }
+        if((answer1.value=="кола" && answer2.value!="таралеж" && answer3.value!="заек")
+        || (answer1.value!="кола" && answer2.value=="таралеж" && answer3.value!="заек")
+        || (answer1.value!="кола" && answer2.value!="таралеж" && answer3.value=="заек"))
+        {
+        document.getElementById("res1").innerHTML = "";
+        document.getElementById("res2").innerHTML ="Имате 1 верен отговор и 2 грешни отговора!";
+        document.getElementById("solution1").innerHTML ="Виж решенията";
+        }
+        if((answer1.value!="кола" && answer2.value!="таралеж" && answer3.value!="заек"))
+        {
+        document.getElementById("res1").innerHTML = "";
+        document.getElementById("res2").innerHTML ="За съжаление нямате верен отговор!";
+        document.getElementById("solution1").innerHTML ="Виж решенията";
+        }
+
+        //Препратката към това да видим решенията ще ни се показва, след като вече сме изпратили някакви отговори на задачата. Преди това полето ще е невидимо.
+       
+    }
+	</script>	
+</head>
+	
+<body onload="main()">
+    <h1><b>Урок: Разделяне на думите на срички</b></h1>
+    <br>
+    <!--Първата ни точка от урока
+    Ще си задаваме id на почти всяко поле,текст,бутон и изображение от HTML страницата, за да имаме лесна възможност за достъп до него по всяко време.-->
+    <h2> <u id="title1">1. Oпределение</u>
+        <p id="para1"> Сричките в българския език са части на думата. Броят на сричките в една дума се определя от броя на гласните в нея.
+        Според сричките думите се делят на едносрични, двусрични и многосрични.</p>
+    </h2>
+    
+    <h3> <u id="title2">2. Урок</u>
+        <p id="para2"> За да можем по-лесно да определим колко срички има в една дума, според гласните в нея,
+    нека първо си припомним кои са гласните в българския език.</p>
+       <img id="img1" src="img1.png"></img> 
+       <img id="img2" src="img2.png"></img>
+       <img id="img3" src="img3.png"></img>
+       <img id="img4" src="img4.png"></img>
+       <img id="img5" src="img5.png"></img>
+       <img id="img6" src="img6.png"></img>
+       <p id="para3">След като вече си припомнихме кои са гласните в българския език, вече е време да разберем защо думите се делят
+           на едносрични, двусрични и многосрични и как се определя това.
+       </p>
+       <!--Неномериран списък за различните видове думи според броя срички -едносрични,двусрични и многосрични-->
+       <ul>
+           <li>ЕДНОСРИЧНИ ДУМИ
+               <br>
+               <br>
+                 Едносрични думи са тези думи, които съдържат в себе си само един гласен звук.
+               <br>
+               <img id="img7" src="img7.png"></img>
+               <br>
+               <br>
+           </li>
+           <li>ДВУСРИЧНИ ДУМИ
+               <br>
+               <br>
+                 Двусрични думи са тези думи, които съдържат в себе си точно два гласни звука.
+               <br>
+               <img id="img8" src="img8.png"></img>
+               <br>
+               <br>
+           </li>
+           <li>МНОГОСРИЧНИ ДУМИ
+            <br>
+            <br>
+              Многосрични думи са тези думи, които съдържат в себе си повече от два гласни звука.
+            <br>
+            <img id="img9" src="img9.png"></img>
+    
+        </li>
+        </ul>
+        <p id="para4"><b>!!!      ВАЖНО: БУКВИТЕ "Ю" И "Я" В БЪЛГАРСКИЯ ЕЗИК СЪЩЕСТВУВАТ КАТО ОТДЕЛНИ СРИЧКИ.</b></p>
+    </h3>
+    <h4>
+        <u id="title3">3. Задачи</u>
+        <br>
+        <br>
+        <p id="title4"><em>ЗАД.№ 1</em></p>
+        <p id="para5">УСЛОВИЕ: Дадени са 6 кубчета под всяка картинка, всяко кубче има на стената си по 1 сричка. Отгатнете думите, изобразени с картинки, с помощта на сричките от кубчетата.
+            Напишете под всяка картинка верния според вас отговор.
+        </p>
+        <p id="para6">УКАЗАНИЕ ЗА РАБОТА: С левия бутон на мишката можете да премествате кубчетата. С натискане на десния бутон на мишката върху кубче, кубчето се завърта по
+            случаен начин и се премества. След като въведете верните отговори според Вас, натиснете "Изпрати".
+        </p>
+        <p id="para9">
+            
+            <a href ="img16.png" target ="blank"> <!--Изображението да ни се отваря при натискане в отделен прозорец.-->
+            <img id="img16" src="img16.png"></img>
+            </a>
+            <a href ="img17.png" target ="blank">
+            <img id="img17" src="img17.png"></img>
+            </a>
+            <a href ="img18.png" target ="blank">
+            <img id="img18" src="img18.png"></img>
+            </a>
+        </p>
+       
+    </h4>
+    <div id="task1">
+         <!--Полета за въвеждане на отговите на задача 1-->
+        <input type="text" id="pict1" value="" size="2">
+        <input type="text" id="pict2" value="" size="2">
+        <input type="text" id="pict3" value="" size="2">
+        <p id="res1"><b></b></p>
+        <p id="res2"><b></b></p>
+         <!--Препратка към отговорите на задача 1, помощен файл solution2.html-->
+        <a href="solution1.html"><p id="solution1"><b></b></p></a>
+        <br>
+         <!--Бутон за изпращане на отговорите на задача 1-->
+        <button id="mybutton2" onclick= "send2()">Изпрати</button>
+    </div>
+    <!--Трите канвас полета-->
+    <canvas id="one" width="450" height="400" style="border: solid 5px Black;"></canvas>
+    <canvas id="two" width="450" height="400" style="border: solid 5px Black;"></canvas>
+    <canvas id="three" width="450" height="400" style="border: solid 5px Black;"></canvas>
+    <br>
+    <br>
+    <h5>
+        <p id="title5"><em>ЗАД.№ 2</em></p>
+        <p id="para7">УСЛОВИЕ: Преброете колко срички има в думите.</p>
+        <p id="para8">УКАЗАНИЕ ЗА РАБОТА: От клавиатурата можете да въведете числото, което смятате, че отговаря на броя на сричките в думата.
+            След като въведете верните отговори според Вас, натиснете "Изпрати". Ще Ви излезе колко точки имате и съответно колко грешни и колко верни отговора имате.
+            Всеки верен отговор Ви носи по 1 точка. 
+        </p>
+    </h5>
+    <br>
+    <br>
+    <div class="panel">
+        <p id="uvod">ПРОВЕРЕТЕ ЗНАНИЯТА СИ ЗА СРИЧКИТЕ В БЪЛГАРСКИЯ ЕЗИК!</p>
+        <a href ="img11.png" target ="blank">
+            <img id="img11" src="img11.png"> </img> 
+        </a>
+        <a href ="img12.png" target ="blank">
+            <img id="img12" src="img12.png"> </img> 
+        </a>
+        <a href ="img13.png" target ="blank">
+            <img id="img13" src="img13.png"> </img> 
+        </a>
+        <a href ="img14.png" target ="blank">
+            <img id="img14" src="img14.png"> </img> 
+        </a>
+        <br>
+        <div id="w1"> Брой срички: 
+        <!--Полета за въвеждане на отговите на задача 2-->
+        <input type="text" id="word1" value="" size="2">
+        <input type="text" id="word2" value="" size="2">
+        <input type="text" id="word3" value="" size="2">
+        <input type="text" id="word4" value="" size="2">
+        </div>
+        <br>
+        <!--Бутон за изпращане на отговорите на задача 2-->
+        <button id="mybutton" onclick= "send()">Изпрати</button>
+        <p id="result1"><b></b></p>
+        <p id="result2"><b></b></p>
+        <!--Препратка към отговорите на задача 1, помощен файл solution2.html-->
+        <a href="solution2.html"><p id="solution2"><b></b></p></a>
+    
+        <p id="paraf">Изображенията са авторски. Създадени са с помощта на Paint и Paint 3D.</p>
+        
+        </div>
+        <br>
+        <br>
+</body>
